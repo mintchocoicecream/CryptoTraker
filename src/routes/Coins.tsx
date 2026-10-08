@@ -24,7 +24,8 @@ const Coin = styled.li`
   a {
     padding: 20px;
     transition: color 0.2s ease-in;
-    display: block;
+    display: flex;
+    align-items: center; 
   };
   &:hover {
     a {
@@ -42,14 +43,20 @@ const Loader = styled.span`
   display: block;
 `;
 
+const Img = styled.img`
+  width: 35px;
+  height: 35px;
+  margin-right: 10px;
+`;
+
 interface CoinInterface {
   id: string;
   name: string;
-  symbol?: string;
-  rank?: number;
-  is_new?: boolean;
-  is_active?: boolean;
-  type?: string;
+  symbol: string;
+  rank: number;
+  is_new: boolean;
+  is_active: boolean;
+  type: string;
 };
 
 function Coins() {
@@ -63,7 +70,6 @@ function Coins() {
       setLoading(false);
     })();
   }, []);
-
   return (
     <Container>
       <Header>
@@ -74,7 +80,8 @@ function Coins() {
       <CoinsList>
         {coins.map((coin) => (
           <Coin key={coin.id}>
-            <Link to={`/${coin.id}`}>
+            <Link to={`/${coin.id}`} state={{ name: coin.name }}>
+              <Img src={`https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/32/color/${coin.symbol.toLocaleLowerCase()}.png`} />
               {coin.name} &rarr;
             </Link>
           </Coin>
