@@ -1,9 +1,22 @@
+import { Helmet } from "react-helmet-async";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { ComponentProps, useEffect, useState, type ReactElement, type SVGProps } from "react";
 import { Outlet, useLocation, useParams } from "react-router";
 import { Link, useMatch } from "react-router-dom";
 import styled from "styled-components";
 import { fetchCoinInfo, fetchCoinTickers } from "../api";
+import { FaHome } from 'react-icons/fa';
+
+const HomeIcon = FaHome as React.ElementType;
+const FaHomeIcon = styled(HomeIcon)`
+  font-size: 24px;
+  color: ${(props) => props.theme.textColor};
+  margin-right: 12px;
+  transition: color 0.2s ease-in;
+  cursor: pointer;
+  &:hover {
+    color: ${(props) => props.theme.accentColor};  
+`;
 
 const Title = styled.h1`
   font-size: 48px;
@@ -24,6 +37,7 @@ const Container = styled.div`
 const Header = styled.header`
   height: 15vh;     
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
 `;  
@@ -146,9 +160,18 @@ function Coin() {
   const { isLoading: infoLoading, data: infoData } = useQuery<InfoData>({ queryKey: ["info", coinId], queryFn: () => fetchCoinInfo(coinId!) });
   const { isLoading: tickersLoading, data: priceInfo } = useQuery<PriceData>({ queryKey: ["tickers", coinId], queryFn: () => fetchCoinTickers(coinId!) });
   const loading = infoLoading || tickersLoading;
+  //const FaHomeIcon = FaHome as React.ElementType;
   return (
     <Container>
+      <Helmet>
+        <title>
+          {state?.name ? state.name : loading ? "Loading..." : infoData?.name}
+        </title>
+      </Helmet>
       <Header>
+        <Link to={`/`}>
+          <FaHomeIcon />
+        </Link>
         <Title>
           {state?.name ? state.name : loading ? "Loading..." : infoData?.name}
         </Title> 
@@ -167,8 +190,8 @@ function Coin() {
               <span>${infoData?.symbol}</span>
             </OverviewItem>
             <OverviewItem>
-              <span>Open Source:</span>
-              <span>{infoData?.open_source ? "Yes" : "No"}</span>
+               <span>Price:</span>
+              <span>${priceInfo?.quotes.USD.price.toFixed(3)}</span>
             </OverviewItem>
           </Overview>
           <Description>{infoData?.description}</Description>
@@ -190,7 +213,7 @@ function Coin() {
               <Link to={`/${coinId}/price`}>Price</Link>
             </Tab>
           </Tabs>
-          <Outlet />
+          <Outlet context={{ coinId }} />
         </>
       )}
     </Container>
