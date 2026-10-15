@@ -1,8 +1,11 @@
-import { createGlobalStyle } from "styled-components";
+import { createGlobalStyle, ThemeProvider } from "styled-components";
 import { RouterProvider } from "react-router-dom";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import router from "./Router";
 import { HelmetProvider } from "react-helmet-async";
+import { useAtom } from "jotai";
+import { lightTheme,  darkTheme } from "./theme";
+import { isDarkAtom } from "./atom";
 
 const GlobalStyle = createGlobalStyle`
   @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400&display=swap');
@@ -68,13 +71,16 @@ const GlobalStyle = createGlobalStyle`
 `;
 
 function App() {
+  const [isDark] = useAtom(isDarkAtom);
   return (
     <>
-      <GlobalStyle />
-      <HelmetProvider>
-        <RouterProvider router={router} />
-      </HelmetProvider>
-      <ReactQueryDevtools initialIsOpen={true} />
+      <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
+        <GlobalStyle />
+        <HelmetProvider>
+          <RouterProvider router={router} />
+        </HelmetProvider>
+        <ReactQueryDevtools initialIsOpen={true} />
+      </ThemeProvider>
     </>
   );
 }

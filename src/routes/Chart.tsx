@@ -2,6 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchCoinHistory } from "../api";
 import { useOutletContext } from "react-router-dom";
 import ApexChart from "react-apexcharts";
+import { useAtom } from "jotai";
+import { isDarkAtom } from "../atom";
 
 interface ChartProps {
   coinId: string;
@@ -25,7 +27,7 @@ interface IHistorical {
 const Chart = () => {
     const {coinId} = useOutletContext<ICoinId>();
     const { isLoading, data } = useQuery<IHistorical[]>({ queryKey: ["ohlcv", coinId], queryFn: () => fetchCoinHistory(coinId) });
-    
+    const [isDark] = useAtom(isDarkAtom);
     return (
     <div>
       {isLoading ? (
@@ -42,7 +44,7 @@ const Chart = () => {
             ]}
           options={{
             theme: {
-              mode: "dark",
+              mode: isDark ? "dark" : "light",
             },
             chart: {
               height: 300,
