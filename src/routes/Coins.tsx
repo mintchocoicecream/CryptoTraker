@@ -1,9 +1,10 @@
 import { Helmet } from "react-helmet-async";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { fetchCoins } from "../api";
+import { useAtom } from "jotai";
+import { isDarkAtom } from "../atom";
 
 const Container = styled.div`
   padding: 0px 20px;
@@ -63,6 +64,8 @@ interface ICoin {
 }
 
 function Coins() {
+  const [isDark, setIsDark] = useAtom(isDarkAtom);
+  const toggleDarkAtom = () => setIsDark((prev) => !prev);
   const { isLoading, data } = useQuery<ICoin[]>({
     queryKey: ["allCoins"],
     queryFn: fetchCoins,
@@ -74,6 +77,7 @@ function Coins() {
       </Helmet>
       <Header>
         <Title>Coins</Title>
+        <button onClick={toggleDarkAtom}>{isDark ? "Dark Mode" : "Light Mode"}</button>
       </Header>
       {isLoading ? 
       <Loader>Loading...</Loader> 
